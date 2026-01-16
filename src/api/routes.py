@@ -343,6 +343,26 @@ async def recheck_torrents(hashes: str = Form(...)) -> str:
     return "Ok."
 
 
+@router.get("/torrents/categories")
+async def get_categories() -> dict:
+    """
+    Get all categories.
+
+    Returns:
+        Dictionary of categories with name and savePath
+    """
+    return {
+        "sonarr": {
+            "name": "sonarr",
+            "savePath": f"{settings.download_path}/complete"
+        },
+        "radarr": {
+            "name": "radarr",
+            "savePath": f"{settings.download_path}/complete"
+        }
+    }
+
+
 @router.get("/torrents/properties")
 async def get_torrent_properties(
     hash: str = Query(...),
