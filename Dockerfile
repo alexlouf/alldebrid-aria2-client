@@ -21,9 +21,8 @@ FROM python:3.12-alpine
 RUN apk add --no-cache \
     aria2 \
     sqlite \
-    unrar \
-    lsblk \
-    util-linux
+    util-linux \
+    wget
 
 # Copy Python dependencies from builder
 COPY --from=builder /root/.local /root/.local
