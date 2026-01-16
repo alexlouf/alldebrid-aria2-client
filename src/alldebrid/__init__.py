@@ -1,0 +1,1 @@
+"""AllDebrid API client."""
