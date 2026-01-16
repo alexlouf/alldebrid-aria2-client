@@ -1,14 +1,12 @@
 version: '3.8'
 
+# Development docker-compose file
+# Use this for local development with live code changes
+
 services:
   alldebrid-client:
-    # Use pre-built image from GitHub Container Registry
-    image: ghcr.io/alexlouf/alldebrid-aria2-client:latest
-
-    # Or build locally (uncomment the line below and comment the image line)
-    # build: .
-
-    container_name: alldebrid-client
+    build: .
+    container_name: alldebrid-client-dev
     environment:
       - PUID=1000
       - PGID=1000
@@ -30,8 +28,8 @@ services:
       - WRITE_BATCH_SIZE=64M
       - ENABLE_MMAP=true
 
-      # Logging
-      - LOG_LEVEL=INFO
+      # Logging (DEBUG for development)
+      - LOG_LEVEL=DEBUG
 
       # Optional features
       - ENABLE_DASHBOARD=false
@@ -40,6 +38,8 @@ services:
     volumes:
       - ./config:/config
       - ./downloads:/downloads
+      # Mount source code for development (live reload)
+      - ./src:/app/src:ro
 
     ports:
       - "6500:6500"      # API qBittorrent
@@ -52,7 +52,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G      # 2 GB (for RAM buffers)
+          memory: 2G
         reservations:
           memory: 512M
 
@@ -60,4 +60,4 @@ services:
 
 networks:
   default:
-    name: media-stack
+    name: media-stack-dev

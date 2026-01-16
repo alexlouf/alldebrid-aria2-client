@@ -42,10 +42,47 @@
 
 ### Installation
 
+#### Option 1: Using Pre-built Image (Recommended)
+
+The easiest way to use this client is with the pre-built Docker image from GitHub Container Registry:
+
+1. Create a directory for your deployment:
+
+```bash
+mkdir alldebrid-client && cd alldebrid-client
+```
+
+2. Download the docker-compose.yml:
+
+```bash
+wget https://raw.githubusercontent.com/alexlouf/alldebrid-aria2-client/main/docker-compose.yml
+wget https://raw.githubusercontent.com/alexlouf/alldebrid-aria2-client/main/.env.example
+```
+
+3. Create `.env` file:
+
+```bash
+cp .env.example .env
+# Edit .env and add your AllDebrid API key
+nano .env
+```
+
+4. Start the service:
+
+```bash
+docker-compose up -d
+```
+
+The image will be automatically pulled from `ghcr.io/alexlouf/alldebrid-aria2-client:latest`
+
+#### Option 2: Building from Source
+
+If you want to build the image yourself:
+
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/alldebrid-aria2-client.git
+git clone https://github.com/alexlouf/alldebrid-aria2-client.git
 cd alldebrid-aria2-client
 ```
 
@@ -57,19 +94,38 @@ cp .env.example .env
 nano .env
 ```
 
-3. Start the service:
+3. Build and start:
 
 ```bash
-docker-compose up -d
+# Use the development compose file that builds locally
+docker-compose -f docker-compose.dev.yml up -d
 ```
 
-4. Check logs:
+### Verify Installation
+
+Check logs to ensure everything is running:
 
 ```bash
 docker-compose logs -f alldebrid-client
 ```
 
+Test the API:
+
+```bash
+curl http://localhost:6500/health
+```
+
 The service will be available at `http://localhost:6500`
+
+### Available Docker Images
+
+Images are automatically built and published to GitHub Container Registry:
+
+- `ghcr.io/alexlouf/alldebrid-aria2-client:latest` - Latest version from main branch
+- `ghcr.io/alexlouf/alldebrid-aria2-client:v1.0.0` - Specific version tag
+- `ghcr.io/alexlouf/alldebrid-aria2-client:develop` - Development branch
+
+Multi-architecture support: `linux/amd64` and `linux/arm64`
 
 ## Configuration
 
@@ -281,7 +337,32 @@ If RAM usage is higher than expected:
 
 ## Development
 
-### Local Setup
+### Docker Development Setup (Recommended)
+
+For development with Docker:
+
+```bash
+# Clone the repository
+git clone https://github.com/alexlouf/alldebrid-aria2-client.git
+cd alldebrid-aria2-client
+
+# Create .env file
+cp .env.example .env
+# Edit .env with your settings
+
+# Use the development compose file (builds locally with DEBUG logging)
+docker-compose -f docker-compose.dev.yml up -d
+
+# Watch logs
+docker-compose -f docker-compose.dev.yml logs -f
+
+# Rebuild after code changes
+docker-compose -f docker-compose.dev.yml up -d --build
+```
+
+### Local Python Setup
+
+For development without Docker:
 
 1. Install Python 3.12+
 
@@ -319,6 +400,20 @@ python -m src.main
 
 ```bash
 pytest tests/
+```
+
+### Building Docker Images
+
+The Docker images are automatically built by GitHub Actions on push.
+
+To build manually:
+
+```bash
+# Build for local architecture
+docker build -t alldebrid-client:local .
+
+# Build for multiple architectures (requires buildx)
+docker buildx build --platform linux/amd64,linux/arm64 -t alldebrid-client:multi .
 ```
 
 ## API Documentation
