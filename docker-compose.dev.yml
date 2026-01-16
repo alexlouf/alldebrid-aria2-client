@@ -1,0 +1,63 @@
+version: '3.8'
+
+# Development docker-compose file
+# Use this for local development with live code changes
+
+services:
+  alldebrid-client:
+    build: .
+    container_name: alldebrid-client-dev
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+
+      # AllDebrid API (REQUIRED)
+      - ALLDEBRID_API_KEY=${ALLDEBRID_API_KEY}
+
+      # Storage optimization (auto-detected by default)
+      - STORAGE_TYPE=auto
+      - ARIA2_CONNECTIONS=16
+      - ARIA2_SPLIT=1
+      - ARIA2_DISK_CACHE=128M
+      - RAM_BUFFER_PER_DOWNLOAD=512M
+      - MAX_CONCURRENT_DOWNLOADS=2
+
+      # Write optimization
+      - FILE_ALLOCATION=prealloc
+      - WRITE_BATCH_SIZE=64M
+      - ENABLE_MMAP=true
+
+      # Logging (DEBUG for development)
+      - LOG_LEVEL=DEBUG
+
+      # Optional features
+      - ENABLE_DASHBOARD=false
+      - AUTO_EXTRACT=false
+
+    volumes:
+      - ./config:/config
+      - ./downloads:/downloads
+      # Mount source code for development (live reload)
+      - ./src:/app/src:ro
+
+    ports:
+      - "6500:6500"      # API qBittorrent
+      - "8080:8080"      # Dashboard (if enabled)
+
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+
+    restart: unless-stopped
+
+networks:
+  default:
+    name: media-stack-dev

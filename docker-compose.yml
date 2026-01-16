@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  alldebrid-client:
+    # Use pre-built image from GitHub Container Registry
+    image: ghcr.io/alexlouf/alldebrid-aria2-client:latest
+
+    # Or build locally (uncomment the line below and comment the image line)
+    # build: .
+
+    container_name: alldebrid-client
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+
+      # AllDebrid API (REQUIRED)
+      - ALLDEBRID_API_KEY=${ALLDEBRID_API_KEY}
+
+      # Storage optimization (auto-detected by default)
+      - STORAGE_TYPE=auto
+      - ARIA2_CONNECTIONS=16
+      - ARIA2_SPLIT=1
+      - ARIA2_DISK_CACHE=128M
+      - RAM_BUFFER_PER_DOWNLOAD=512M
+      - MAX_CONCURRENT_DOWNLOADS=2
+
+      # Write optimization
+      - FILE_ALLOCATION=prealloc
+      - WRITE_BATCH_SIZE=64M
+      - ENABLE_MMAP=true
+
+      # Logging
+      - LOG_LEVEL=INFO
+
+      # Optional features
+      - ENABLE_DASHBOARD=false
+      - AUTO_EXTRACT=false
+
+    volumes:
+      - ./config:/config
+      - ./downloads:/downloads
+
+    ports:
+      - "6500:6500"      # API qBittorrent
+      - "8080:8080"      # Dashboard (if enabled)
+
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+
+    deploy:
+      resources:
+        limits:
+          memory: 2G      # 2 GB (for RAM buffers)
+        reservations:
+          memory: 512M
+
+    restart: unless-stopped
+
+networks:
+  default:
+    name: media-stack
