@@ -69,3 +69,7 @@ Thumbs.db
 
 # Project specific
 *.pid
+
+# Personal/local deployment files
+SONARR_RADARR_SETUP.md
+docker-compose.media-stack.yml
