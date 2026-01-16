@@ -52,16 +52,16 @@ jobs:
           tags: |
             # Set latest tag for default branch
             type=raw,value=latest,enable={{is_default_branch}}
-            # Tag with branch name
+            # Tag with branch name (for push events)
             type=ref,event=branch
-            # Tag with PR number
-            type=ref,event=pr
+            # Tag with PR number (for pull request events)
+            type=ref,event=pr,prefix=pr-
             # Tag with git tag (semantic versioning)
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            # Tag with commit SHA
-            type=sha,prefix={{branch}}-
+            # Tag with commit SHA (short form)
+            type=sha,format=short
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
