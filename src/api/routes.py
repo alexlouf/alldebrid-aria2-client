@@ -5,6 +5,7 @@ import hashlib
 from typing import List, Optional
 
 from fastapi import APIRouter, Form, HTTPException, Depends, Query
+from fastapi.responses import PlainTextResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..database import crud
@@ -67,13 +68,13 @@ def extract_name_from_magnet(magnet_uri: str) -> str:
 # App endpoints
 
 
-@router.get("/app/version")
+@router.get("/app/version", response_class=PlainTextResponse)
 async def get_app_version() -> str:
     """Get application version."""
     return "v4.5.0"
 
 
-@router.get("/app/webapiVersion")
+@router.get("/app/webapiVersion", response_class=PlainTextResponse)
 async def get_webapi_version() -> str:
     """Get Web API version."""
     return "2.8.0"
